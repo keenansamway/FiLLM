@@ -1,0 +1,82 @@
+model_family: llama2-7b
+model_path: null
+
+use_lora: noLORA # noLORA or LORA
+LoRA:
+  r: 0
+  alpha: 32
+  dropout: 0.05
+
+data:
+  name: tofu # knowundo
+  path: locuslab/TOFU # zjunlp/KnowUnDo
+  split: forget01
+  forget_points_range: [-1, -1] # only used for KnowUnDo, defaults to full unlearn data (e.g. [0,40] would be the first 40 datapoints)
+
+batch_size: 16
+gradient_accumulation_steps: 4
+
+num_epochs: 5
+optimizer: null # adamw, sophiag
+forget_loss: grad-ascent
+lr: 1e-5
+weight_decay: 0.00
+
+save_steps: 0
+
+local:
+  method: none # none, random, gradient, influence
+  k: 1 # 1, 0.5, 0.1
+  k_offset: 0
+  num_retain: 400 # 4000
+  in_scope: "" # mlp,attn,norm,embed
+  out_scope: "" # bias
+  shuffle: false # true, false
+  compression_power: 16
+
+lam: null # 0.1
+beta1: null # 0.965
+beta2: null # 0.99
+rho: null # 0.04
+
+save_dir: "${model_path}/${optimizer}_${forget_loss}_${local.method}_k${local.k}_${lr}_${data.split}_${num_epochs}" #"${model_path}/${optimizer}_k${top_k}_${forget_loss}_${lr}_${split}_${num_epochs}"
+overwrite_dir: false
+save_model: true
+eval_while_train: false
+eval_only: false
+seed: 42
+
+is_paged: false
+
+eval:
+  # retain_result: data/retain90_llama_wd0.01/eval_results/ds_size300/eval_log_aggregated.json
+  model_path: ${..model_path}
+  model_family: ${..model_family}
+  save_dir: ${..save_dir}
+  data_path: [locuslab/TOFU, locuslab/TOFU, locuslab/TOFU, locuslab/TOFU]
+  split: ${..split}_perturbed
+  split_list:
+    - retain_perturbed
+    - real_authors_perturbed
+    - world_facts_perturbed
+    - ${split}
+
+  eval_task: [eval_log, eval_real_author_wo_options, eval_real_world_wo_options, eval_log_forget]
+  question_key: [question, question, question, question]
+  answer_key: [answer, answer, answer, answer]
+  base_answer_key: [paraphrased_answer, answer, answer, paraphrased_answer]
+  perturbed_answer_key: [perturbed_answer, perturbed_answer, perturbed_answer, perturbed_answer]
+
+  generation:
+    max_length: 200
+    max_new_tokens: null
+
+  save_generated_text: true
+
+  ds_size: 300
+
+  overwrite: true
+  use_pretrained: false
+
+  batch_size: 30
+  retain_result: null

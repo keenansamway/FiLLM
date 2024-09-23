@@ -1,0 +1,14 @@
+.vscode/
+wandb/
+outputs/
+models/
+results/
+commands.md
+**/__pycache__
+grads_path/
+compressed_grads/
+figures/
+x/
+
+*.out
+slurm_scripts/

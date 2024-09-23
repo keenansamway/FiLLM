@@ -1,0 +1,19 @@
+transformers
+hydra-core
+datasets
+accelerate
+# deepspeed
+evaluate
+matplotlib
+omegaconf
+peft
+rouge_score
+tqdm
+einops
+packaging
+bitsandbytes
+scipy
+ninja
+natsort
+scikit-learn
+jupyter

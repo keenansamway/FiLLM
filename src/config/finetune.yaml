@@ -1,0 +1,24 @@
+model_family: qwen2-1.5b
+
+use_lora: noLORA # noLORA or LORA
+LoRA:
+  r: 0
+  alpha: 32
+  dropout: 0.05
+
+data:
+  name: tofu # knowundo
+  path: locuslab/TOFU # zjunlp/KnowUnDo
+  split: full
+
+batch_size: 16
+gradient_accumulation_steps: 1
+num_epochs: 5
+lr: 1e-5
+save_dir: models/${model_family}_ft_${data.name}_${use_lora}_epochs${num_epochs}_lr${lr}_wd${weight_decay}_${data.split}_seed${seed}
+save_steps: 0
+
+weight_decay: 0.01
+seed: 42
+
+is_paged: false
